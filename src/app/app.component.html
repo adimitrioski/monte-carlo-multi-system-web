@@ -1,20 +1,124 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
-  </h1>
-  <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
+<mat-toolbar color="primary">Simple Monte Carlo CPU vs. GPU</mat-toolbar>
+
+<div class="container"
+     fxLayout.gt-md="row"
+     fxLayoutAlign.gt-md="space-evenly stretch"
+     fxLayoutGap="20px"
+     fxLayout.lt-md="column"
+     fxLayoutAlign.lt-md="space-evenly">
+
+  <mat-card class="form-container" fxFlex.gt-md="30">
+    <mat-card-header>
+      <mat-card-title>Monte Carlo Simulation Parameters</mat-card-title>
+    </mat-card-header>
+    <mat-card-content fxLayout="column" fxLayoutAlign="space-around center" fxLayoutGap="5px">
+
+        <mat-radio-group
+          fxLayout="column"
+          fxLayoutAlign="center center"
+          fxLayoutGap="5px"
+          aria-labelledby="example-radio-group-label"
+          class="example-radio-group"
+          [(ngModel)]="runOn">
+          <label>Run on: </label>
+          <mat-radio-button value="CPU">
+            CPU
+          </mat-radio-button>
+          <mat-radio-button value="GPU">
+            GPU
+          </mat-radio-button>
+        </mat-radio-group>
+
+      <form fxLayout="column" fxLayoutAlign="space-around center" [formGroup]="monteCarloRequestFormGroup" (ngSubmit)="runSimulation()">
+        <mat-form-field>
+          <input matInput type="number" placeholder="Number of iterations" formControlName="numIterations">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput type="number" placeholder="Expected Return" formControlName="expectedReturn">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput type="number" placeholder="Volatility" formControlName="volatility">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput type="number" placeholder="Time Horizon (Years)" formControlName="timeHorizon">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput type="number" placeholder="Starting Value" formControlName="startingValue">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput type="number" placeholder="Annual Investment" formControlName="annualInvestment">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="!monteCarloRequestFormGroup.valid">Run Simulation</button>
+
+      </form>
+
+    </mat-card-content>
+  </mat-card>
+
+  <div
+    class="results-container"
+    fxFlex.gt-md="70"
+  >
+    <mat-progress-spinner
+      *ngIf="showSpinner"
+      color="primary"
+      mode="indeterminate">
+    </mat-progress-spinner>
+    <div
+      *ngIf="monteCarloResult">
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Summary:</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <mat-list dense>
+            <mat-list-item>Simulation time: {{ monteCarloResult.simulationTime }} ms</mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>Mean: {{ monteCarloResult.mean }}</mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>Standard deviation: {{ monteCarloResult.standardDeviation }}</mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>Min: {{ monteCarloResult.min }}</mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>Max: {{ monteCarloResult.max }}</mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>Ran on: {{ monteCarloResult.ranOn }}</mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>Number of iterations: {{ monteCarloResult.numIterations }}</mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item>Time horizon: {{ monteCarloResult.timeHorizon }} years</mat-list-item>
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-divider [inset]="true"></mat-divider>
+
+      <ngx-charts-bar-vertical
+        *ngIf="monteCarloResult.histogram"
+        [results]="monteCarloResult.histogram"
+        [xAxis]="true"
+        [yAxis]="true"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [animations]="false"
+        [roundDomains]="true"
+        [gradient]="true"
+        xAxisLabel="Value"
+        yAxisLabel="Count"
+      >
+      </ngx-charts-bar-vertical>
+
+    </div>
+  </div>
+
 </div>
-<h2>Here are some links to help you start: </h2>
-<ul>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-  </li>
-  <li>
-    <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-  </li>
-</ul>
+
 

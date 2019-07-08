@@ -1,0 +1,18 @@
+.results-container {
+  max-height: 650px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.container {
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+mat-progress-spinner {
+  margin:0 auto;
+  position: absolute;
+  top: 50%;
+  left: 60%;
+}
