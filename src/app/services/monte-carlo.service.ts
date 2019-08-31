@@ -24,7 +24,9 @@ export class MonteCarloService {
     monteCarloRequest: MonteCarloRequest,
     runOn: string,
   ): Observable<MonteCarloResult> {
-    const url = `${this.monteCarloUrl}/${MonteCarloService.runOnUrlMapping.get(runOn)}`;
-    return this.httpClient.post<MonteCarloResult>(url, monteCarloRequest);
+    const url = `${this.monteCarloUrl}`;
+    return this.httpClient.post<MonteCarloResult>(url, monteCarloRequest, {params: {
+      runOn: MonteCarloService.runOnUrlMapping.get(runOn)
+    }});
   }
 }
